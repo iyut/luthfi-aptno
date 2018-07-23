@@ -34,9 +34,11 @@ function luthfi_aptno_init(){
 
 	add_filter('woocommerce_checkout_fields', 'luthfi_aptno_add_fields');
 	add_action('woocommerce_checkout_process', 'luthfi_aptno_validate_fields');
+	
 }
 
 function luthfi_aptno_add_fields( $fields ){
+
 	$fields['billing']['billing_apartmentno'] = array(
 		'type'		=> 'text',
         'label'     => esc_html__('Apartment Number', 'luthfi-aptno'),
@@ -47,10 +49,15 @@ function luthfi_aptno_add_fields( $fields ){
      );
 
      return $fields;
+
 }
 
 function luthfi_aptno_validate_fields(){
+
 	if ( isset( $_POST['billing_apartmentno'] ) && !is_numeric( $_POST['billing_apartmentno'] ) ){
+
 		wc_add_notice( esc_html__( 'Please enter the apartment number with number.', 'luthfi-aptno' ), 'error' );
+
 	}
+
 }
