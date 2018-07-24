@@ -3,7 +3,7 @@
 Plugin Name: Luthfi - Apartment Number
 Plugin URI: https://github.com/iyut/luthfi-aptno
 Description: Adding apartment number field at checkout page
-Version: 0.8.0
+Version: 1.0.0
 Author: Luthfi
 Author URI: http://www.interfeis.com
 License: GPLv2 or later
@@ -27,9 +27,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 // Make sure we don't expose any info if called directly
 add_action( 'plugins_loaded', 'luthfi_aptno_init', 0 );
 
+/**
+ * Main init of the plugin.
+ *
+ * Initiate all the hooks
+ *
+ * @since  1.0.0
+ * @return void
+ */
 function luthfi_aptno_init(){
 
 	add_filter('woocommerce_checkout_fields', 'luthfi_aptno_add_fields');
@@ -43,16 +55,28 @@ function luthfi_aptno_init(){
 
 }
 
+/**
+ * Return the plugin directory path
+ *
+ * @since  1.0.0
+ * @return string
+ */
 function luthfi_aptno_plugin_path(){
 
 	return untrailingslashit( plugin_dir_path( __FILE__ ) );
 
 }
 
+/**
+ * Add a new field for apartment number
+ *
+ * @since  1.0.0
+ * @return array
+ */
 function luthfi_aptno_add_fields( $fields ){
 
 	$fields['billing']['billing_apartmentno'] = array(
-		'type'		=> 'number',
+		'type'		=> 'text',
         'label'     => esc_html__('Apartment Number', 'luthfi-aptno'),
     	'placeholder'   => _x('Apartment Number', 'placeholder', 'luthfi-aptno'),
     	'required'  => false,
@@ -64,9 +88,15 @@ function luthfi_aptno_add_fields( $fields ){
 
 }
 
+/**
+ * Validating the apartment number field.
+ *
+ * @since  1.0.0
+ * @return void
+ */
 function luthfi_aptno_validate_fields(){
 
-	if( isset( $_POST['billing_apartmentno'] ) && !is_numeric( $_POST['billing_apartmentno'] ) ){
+	if( isset( $_POST['billing_apartmentno'] ) && !empty( $_POST['billing_apartmentno'] ) && !is_numeric( $_POST['billing_apartmentno'] ) ){
 
 		wc_add_notice( '<strong>'. esc_html__( 'Apartment number', 'luthfi-aptno' ) .'</strong>'. ' ' .esc_html__( 'must be a number.', 'luthfi-aptno' ), 'error' );
 
@@ -74,6 +104,12 @@ function luthfi_aptno_validate_fields(){
 
 }
 
+/**
+ * Saving the apartment number field into order meta data.
+ *
+ * @since  1.0.0
+ * @return void
+ */
 function luthfi_aptno_save_fields( $order_id, $data ){
 
 	if( !empty( $data['billing_apartmentno'] ) ){
@@ -84,17 +120,12 @@ function luthfi_aptno_save_fields( $order_id, $data ){
 
 }
 
-function luthfi_aptno_show_field( $order_id ){
-
-	$aptno = get_post_meta( $order_id, 'billing_apartmentno');
-?>
-	<p class="woocommerce-field aptno">
-		<b><?php esc_html_e('Apartment No :', 'luthfi-aptno'); ?></b> <?php echo esc_html( $aptno ); ?>
-	</p>
-<?php
-
-}
-
+/**
+ * Adding an apartment number data into billing address
+ *
+ * @since  1.0.0
+ * @return Array
+ */
 function luthfi_aptno_display_field_ba($value, $order){
 
 	$order_id 	= $order->get_id();
@@ -106,17 +137,35 @@ function luthfi_aptno_display_field_ba($value, $order){
 
 }
 
+/**
+ * Adding an apartment number data into billing address and remapping the address field
+ *
+ * @since  1.0.0
+ * @return Array
+ */
 function luthfi_aptno_remap_address_field($value, $args){
 
-	$offset = 6;
-	$new_value = array_slice($value, 0, $offset, true) +
-            	array('{apartmentno}' => esc_html__('Apartment No :', 'luthfi-aptno').' '. esc_html( $args['apartmentno'] )) +
-            	array_slice($value, $offset, NULL, true);
+		$apt_val = !empty( $args['apartmentno'] )? esc_html__('Apartment No :', 'luthfi-aptno').' '. esc_html( $args['apartmentno'] ) : "";
 
-	return $new_value;
+		$offset = 6;
+		$new_value = array_slice($value, 0, $offset, true) +
+	            	array('{apartmentno}' => $apt_val ) +
+	            	array_slice($value, $offset, NULL, true);
+
+		$value = $new_value;
+
+
+
+	return $value;
 
 }
 
+/**
+ * Changing the default format addresses by adding apartment number
+ *
+ * @since  1.0.0
+ * @return Array
+ */
 function luthfi_aptno_format_addresses($value){
 
 	$value['default'] = "{name}\n{company}\n{address_1}\n{address_2}\n{apartmentno}\n{city}\n{state}\n{postcode}\n{country}";
@@ -125,6 +174,12 @@ function luthfi_aptno_format_addresses($value){
 
 }
 
+/**
+ * Changing the default woocommerce locate template
+ *
+ * @since  1.0.0
+ * @return Array
+ */
 function luthfi_aptno_woocommerce_locate_template( $template, $template_name, $template_path ){
 
 	global $woocommerce;
