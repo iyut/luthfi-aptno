@@ -183,7 +183,8 @@ function luthfi_aptno_format_addresses($value){
  * Changing the default woocommerce locate template
  *
  * @since  1.0.0
- * @return Array
+ * @param  string locate_template, string $template name, string $template path
+ * @return String
  */
 function luthfi_aptno_woocommerce_locate_template( $template, $template_name, $template_path ){
 
