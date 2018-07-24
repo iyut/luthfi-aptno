@@ -71,6 +71,7 @@ function luthfi_aptno_plugin_path(){
  * Add a new field for apartment number
  *
  * @since  1.0.0
+ * @param  array $checkout fields
  * @return array
  */
 function luthfi_aptno_add_fields( $fields ){
@@ -108,6 +109,7 @@ function luthfi_aptno_validate_fields(){
  * Saving the apartment number field into order meta data.
  *
  * @since  1.0.0
+ * @param  int $order_id, Array $data
  * @return void
  */
 function luthfi_aptno_save_fields( $order_id, $data ){
@@ -124,6 +126,7 @@ function luthfi_aptno_save_fields( $order_id, $data ){
  * Adding an apartment number data into billing address
  *
  * @since  1.0.0
+ * @param  Array $billing address value and Object $order.
  * @return Array
  */
 function luthfi_aptno_display_field_ba($value, $order){
@@ -141,6 +144,7 @@ function luthfi_aptno_display_field_ba($value, $order){
  * Adding an apartment number data into billing address and remapping the address field
  *
  * @since  1.0.0
+ * @param  array $address map, array $checkout args
  * @return Array
  */
 function luthfi_aptno_remap_address_field($value, $args){
@@ -164,6 +168,7 @@ function luthfi_aptno_remap_address_field($value, $args){
  * Changing the default format addresses by adding apartment number
  *
  * @since  1.0.0
+ * @param  array $format address
  * @return Array
  */
 function luthfi_aptno_format_addresses($value){
